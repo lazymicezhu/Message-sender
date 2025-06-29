@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Lazymice短信</title>
+  <style>
+    body { 
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif; 
+      max-width: 600px; 
+      margin: 40px auto; 
+      background-color: #f8f9fa; 
+      padding: 20px;
+      color: #333;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+    h2 { 
+      color: #1a73e8; 
+      font-size: 24px;
+      letter-spacing: -0.5px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+      margin-top: 0;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #444;
+    }
+    input, button { 
+      width: 100%; 
+      padding: 12px; 
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    input:focus {
+      outline: none;
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+    }
+    button { 
+      background: linear-gradient(135deg, #1a73e8, #0d62c9); 
+      color: #fff; 
+      border: none; 
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 15px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.5px;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+    }
+    pre { 
+      background: #f5f7fa; 
+      padding: 15px; 
+      border-radius: 8px;
+      overflow: auto;
+      font-size: 13px;
+      border: 1px solid #e8eaed;
+      margin-top: 20px;
+    }
+    .preview {
+      margin-top: 30px;
+      position: relative;
+      padding-top: 20px;
+    }
+    .preview-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #444;
+      font-size: 16px;
+      border-bottom: 1px dashed #e0e0e0;
+      padding-bottom: 10px;
+    }
+    .phone-mock {
+      width: 280px;
+      margin: 0 auto;
+      background: #111;
+      border-radius: 36px;
+      padding: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    .phone-notch {
+      position: absolute;
+      width: 150px;
+      height: 28px;
+      background: #111;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      z-index: 2;
+    }
+    .phone-screen {
+      background: linear-gradient(160deg, #f5f5f5 0%, #e8e8e8 100%);
+      border-radius: 28px;
+      overflow: hidden;
+      position: relative;
+      height: 400px;
+      box-shadow: inset 0 0 3px rgba(0,0,0,0.2);
+    }
+    .phone-header {
+      background: #f0f0f0;
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .contact-name {
+      font-weight: 600;
+      font-size: 16px;
+      flex-grow: 1;
+      text-align: center;
+    }
+    .message-container {
+      padding: 15px;
+      height: calc(100% - 50px);
+      overflow-y: auto;
+      background-image: url('data:image/png;base64,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');
+    }
+    .message-bubble {
+      background: #e1ffc7;
+      padding: 12px 16px;
+      border-radius: 18px;
+      position: relative;
+      max-width: 80%;
+      margin-left: auto;
+      margin-bottom: 15px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+      font-size: 15px;
+      line-height: 1.4;
+      border-top-right-radius: 4px;
+    }
+    .message-bubble::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: -8px;
+      width: 16px;
+      height: 16px;
+      background: #e1ffc7;
+      border-bottom-left-radius: 16px;
+    }
+    .message-time {
+      font-size: 11px;
+      color: #8c8c8c;
+      text-align: right;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .message-time::after {
+      content: '✓✓';
+      color: #4fc3f7;
+      margin-left: 4px;
+      font-size: 12px;
+    }
+    .phone-bottom {
+      height: 4px;
+      background: #111;
+      border-radius: 0 0 28px 28px;
+      margin-top: -4px;
+    }
+    .settings-section {
+      background: #f5f7fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #e8eaed;
+    }
+    .settings-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #444;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: #1a73e8;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      width: auto;
+    }
+    .toggle-btn:hover {
+      text-decoration: underline;
+      transform: none;
+      box-shadow: none;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+</head>
+<body>
+  <div class="card">
+    <h2>Lazymice短信</h2>
+    
+    <div class="settings-section">
+      <div class="settings-title">
+        阿里云配置
+        <button class="toggle-btn" onclick="toggleSettings()">显示/隐藏</button>
+      </div>
+      <div id="settings-content" class="hidden">
+        <div class="form-group">
+          <label for="accessKeyId">AccessKey ID</label>
+          <input id="accessKeyId" placeholder="请输入阿里云AccessKey ID" />
+        </div>
+        
+        <div class="form-group">
+          <label for="accessKeySecret">AccessKey Secret</label>
+          <input id="accessKeySecret" type="password" placeholder="请输入阿里云AccessKey Secret" />
+        </div>
+        
+        <div class="form-group">
+          <label for="signName">短信签名</label>
+          <input id="signName" placeholder="请输入短信签名" />
+        </div>
+        
+        <div class="form-group">
+          <label for="templateCode">模板CODE</label>
+          <input id="templateCode" placeholder="请输入短信模板CODE" />
+        </div>
+        
+        <button onclick="saveSettings()">保存配置</button>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="phone">手机号</label>
+      <input id="phone" placeholder="请输入手机号" oninput="updatePreview()" />
+    </div>
+    
+    <div class="form-group">
+      <label for="name">姓名</label>
+      <input id="name" placeholder="请输入姓名" oninput="updatePreview()" />
+    </div>
+    
+    <div class="form-group">
+      <label for="time">时间（留空则使用当前时间）</label>
+      <input id="time" placeholder="如：22:30" oninput="updatePreview()" />
+    </div>
+    
+    <div class="form-group">
+      <label for="action">提醒内容</label>
+      <input id="action" placeholder="如：取快递" oninput="updatePreview()" />
+    </div>
+    
+    <div class="preview">
+      <div class="preview-title">短信预览</div>
+      <div class="phone-mock">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-header">
+            <div class="contact-name">Lazymice短信</div>
+          </div>
+          <div class="message-container">
+            <div class="message-bubble">
+              <div id="preview-content">【lazymicezhu】尊敬的${name}，现在是${time}，请记得${action}哦！</div>
+              <div class="message-time">刚刚</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <button onclick="sendSms()">发送短信</button>
+    
+    <pre id="result"></pre>
+  </div>
+  
+  <script>
+    // 从localStorage加载配置
+    let accessKeyId = '';
+    let accessKeySecret = '';
+    let signName = 'lazymicezhu';
+    let templateCode = 'SMS_489700526';
+    
+    // 页面加载时初始化
+    window.onload = function() {
+      loadSettings();
+      updatePreview();
+    };
+    
+    // 加载保存的配置
+    function loadSettings() {
+      accessKeyId = localStorage.getItem('sms_accessKeyId') || '';
+      accessKeySecret = localStorage.getItem('sms_accessKeySecret') || '';
+      signName = localStorage.getItem('sms_signName') || 'lazymicezhu';
+      templateCode = localStorage.getItem('sms_templateCode') || 'SMS_489700526';
+      
+      // 填充表单
+      document.getElementById('accessKeyId').value = accessKeyId;
+      document.getElementById('accessKeySecret').value = accessKeySecret;
+      document.getElementById('signName').value = signName;
+      document.getElementById('templateCode').value = templateCode;
+    }
+    
+    // 保存配置到localStorage
+    function saveSettings() {
+      accessKeyId = document.getElementById('accessKeyId').value;
+      accessKeySecret = document.getElementById('accessKeySecret').value;
+      signName = document.getElementById('signName').value || 'lazymicezhu';
+      templateCode = document.getElementById('templateCode').value || 'SMS_489700526';
+      
+      localStorage.setItem('sms_accessKeyId', accessKeyId);
+      localStorage.setItem('sms_accessKeySecret', accessKeySecret);
+      localStorage.setItem('sms_signName', signName);
+      localStorage.setItem('sms_templateCode', templateCode);
+      
+      alert('配置已保存到本地浏览器');
+      updatePreview();
+      toggleSettings();
+    }
+    
+    // 显示/隐藏配置区域
+    function toggleSettings() {
+      const settingsContent = document.getElementById('settings-content');
+      settingsContent.classList.toggle('hidden');
+    }
+
+    function getCurrentTimeFormatted() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
+    }
+
+    function updatePreview() {
+      const name = document.getElementById('name').value || '${name}';
+      const time = document.getElementById('time').value || '${time}';
+      const action = document.getElementById('action').value || '${action}';
+      
+      const previewContent = `【${signName}】尊敬的${name}，现在是${time}，请记得${action}哦！`;
+      document.getElementById('preview-content').innerText = previewContent;
+    }
+
+    function randomString(len = 16) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let result = '';
+      for (let i = 0; i < len; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    function getISOTime() {
+      return new Date().toISOString().replace(/\.\d{3}/, '');
+    }
+
+    function percentEncode(str) {
+      return encodeURIComponent(str)
+        .replace(/\!/g, '%21')
+        .replace(/\'/g, '%27')
+        .replace(/\(/g, '%28')
+        .replace(/\)/g, '%29')
+        .replace(/\*/g, '%2A')
+        .replace(/%20/g, '+');
+    }
+
+    function canonicalizedQueryString(params) {
+      const keys = Object.keys(params).sort();
+      return keys.map(key => percentEncode(key) + '=' + percentEncode(params[key])).join('&');
+    }
+
+    function computeSignature(params, accessKeySecret) {
+      const canonicalized = canonicalizedQueryString(params);
+      const stringToSign = 'POST&%2F&' + percentEncode(canonicalized);
+      const key = accessKeySecret + '&';
+      const hash = CryptoJS.HmacSHA1(stringToSign, key);
+      return CryptoJS.enc.Base64.stringify(hash);
+    }
+
+    async function sendSms() {
+      // 检查配置是否已设置
+      if (!accessKeyId || !accessKeySecret) {
+        alert('请先设置阿里云AccessKey');
+        toggleSettings();
+        return;
+      }
+      
+      const phone = document.getElementById('phone').value;
+      const name = document.getElementById('name').value;
+      let time = document.getElementById('time').value;
+      const action = document.getElementById('action').value;
+      const result = document.getElementById('result');
+      
+      // 验证必填字段
+      if (!phone || !name || !action) {
+        alert('请填写手机号、姓名和提醒内容');
+        return;
+      }
+      
+      // 如果时间为空，使用当前时间
+      if (!time) {
+        time = getCurrentTimeFormatted();
+        document.getElementById('time').value = time;
+      }
+      
+      result.innerText = '发送中...';
+
+      const params = {
+        AccessKeyId: accessKeyId,
+        Action: 'SendSms',
+        Format: 'JSON',
+        PhoneNumbers: phone,
+        RegionId: 'cn-hangzhou',
+        SignName: signName,
+        TemplateCode: templateCode,
+        TemplateParam: JSON.stringify({ name, time, action }),
+        SignatureMethod: 'HMAC-SHA1',
+        SignatureNonce: randomString(32),
+        SignatureVersion: '1.0',
+        Timestamp: getISOTime(),
+        Version: '2017-05-25'
+      };
+
+      params.Signature = computeSignature(params, accessKeySecret);
+      const body = canonicalizedQueryString(params);
+
+      try {
+        const res = await fetch('https://dysmsapi.aliyuncs.com/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body
+        });
+        const data = await res.json();
+        result.innerText = JSON.stringify(data, null, 2);
+      } catch (e) {
+        result.innerText = '发送失败：' + e.message;
+      }
+    }
+  </script>
+</body>
+</html> 
